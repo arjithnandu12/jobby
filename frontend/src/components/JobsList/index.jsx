@@ -5,7 +5,7 @@ import axios from 'axios';
 import JobCard from "../JobCard/index.jsx";
 import { AuthContext } from "../../Context/AuthContext";
 
-const API_URL = 'http://localhost:5001/api/jobs';
+const API_URL = 'https://jobby-zzfw.onrender.com/api/jobs';
 
 const JobsList = () => {
   const [jobs, setJobs] = useState([]);

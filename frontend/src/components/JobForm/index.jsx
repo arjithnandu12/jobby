@@ -15,7 +15,7 @@ import {
   Container,
 } from "@mui/material";
 
-const API_URL = "http://localhost:5001/api/jobs";
+const API_URL = "https://jobby-zzfw.onrender.com/api/jobs";
 
 const JobForm = () => {
   const { id } = useParams();

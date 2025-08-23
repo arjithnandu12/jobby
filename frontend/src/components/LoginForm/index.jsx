@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AuthContext } from "../../Context/AuthContext.jsx";
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5001/api/user';
+const API_URL = 'https://jobby-zzfw.onrender.com/api/user';
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);

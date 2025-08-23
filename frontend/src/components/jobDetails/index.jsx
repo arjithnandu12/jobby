@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api/jobs';
+const API_URL = 'https://jobby-zzfw.onrender.com/api/jobs';
 
 const JobDetails = () => {
   const { id } = useParams();
