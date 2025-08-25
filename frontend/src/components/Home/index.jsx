@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Container, Typography, Button, Paper } from "@mui/material";
+import { Box, Container, Typography, Button, Paper, Stack } from "@mui/material";
 
 const Home = () => {
   return (
@@ -21,7 +21,7 @@ const Home = () => {
             p: 6,
             textAlign: "center",
             borderRadius: 4,
-            backgroundColor: "#fffbe9", 
+            backgroundColor: "#fffbe9",
             backdropFilter: "blur(6px)",
             transition: "transform 0.3s",
             "&:hover": {
@@ -29,7 +29,7 @@ const Home = () => {
             },
           }}
         >
-         
+          {/* Title */}
           <Typography
             variant="h2"
             component="h1"
@@ -40,32 +40,94 @@ const Home = () => {
             Welcome to the Job Board
           </Typography>
 
-         
+          {/* Subtext */}
           <Typography variant="body1" color="black" paragraph>
             Find your dream job or post a new opportunity today — let’s grow
             together sustainably!
           </Typography>
 
-        
-          <Button
-            component={Link}
-            to="/jobs"
-            variant="contained"
-            size="large"
-            sx={{
-              mt: 3,
-              px: 5,
-              py: 1.5,
-              borderRadius: "50px",
-              fontWeight: "bold",
-              backgroundColor: "black",
-              color: "white",
-              "&:hover": { backgroundColor: "#333" },
-              boxShadow: 3,
-            }}
-          >
-            Explore All Jobs
-          </Button>
+          {/* Navigation Buttons */}
+          <Stack spacing={2} mt={3}>
+            <Button
+              component={Link}
+              to="/jobs"
+              variant="contained"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                borderRadius: "50px",
+                fontWeight: "bold",
+                backgroundColor: "black",
+                color: "white",
+                "&:hover": { backgroundColor: "#333" },
+                boxShadow: 3,
+              }}
+            >
+              Explore All Jobs
+            </Button>
+
+            <Button
+              component={Link}
+              to="/login"
+              variant="outlined"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                borderRadius: "50px",
+                fontWeight: "bold",
+                borderColor: "black",
+                color: "black",
+                "&:hover": {
+                  backgroundColor: "black",
+                  color: "white",
+                },
+              }}
+            >
+              Login
+            </Button>
+
+            <Button
+              component={Link}
+              to="/register"
+              variant="outlined"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                borderRadius: "50px",
+                fontWeight: "bold",
+                borderColor: "green",
+                color: "green",
+                "&:hover": {
+                  backgroundColor: "green",
+                  color: "white",
+                },
+              }}
+            >
+              Register
+            </Button>
+
+            <Button
+              component={Link}
+              to="/post-job"
+              variant="contained"
+              size="large"
+              sx={{
+                px: 5,
+                py: 1.5,
+                borderRadius: "50px",
+                fontWeight: "bold",
+                backgroundColor: "green",
+                color: "white",
+                "&:hover": { backgroundColor: "darkgreen" },
+                boxShadow: 3,
+              }}
+            >
+              Post a Job
+            </Button>
+          </Stack>
         </Paper>
       </Container>
     </Box>

@@ -1,99 +1,201 @@
-import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import { AuthContext } from "../../Context/AuthContext.jsx";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { AuthContext } from "../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Formik, Form } from "formik";
+import * as Yup from "yup";
+import axios from "axios";
 
-const API_URL = 'https://jobby-zzfw.onrender.com/api/user';
+const API_URL = "https://jobby-zzfw.onrender.com/api/user";
 
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState(null); 
+  const [showPassword, setShowPassword] = useState(false);
+
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null); 
+  // Validation Schema
+  const getValidationSchema = () =>
+    Yup.object().shape({
+      username: !isLogin
+        ? Yup.string()
+            .min(3, "Username must be at least 3 characters")
+            .required("Username is required")
+        : Yup.string(),
+      email: Yup.string()
+        .email("Invalid email format")
+        .required("Email is required"),
+      password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        .required("Password is required"),
+    });
+
+  const handleSubmit = async (
+    values,
+    { setSubmitting, setErrors, resetForm }
+  ) => {
     try {
       if (isLogin) {
-        const response = await axios.post(`${API_URL}/login`, { email, password });
+        const response = await axios.post(`${API_URL}/login`, {
+          email: values.email,
+          password: values.password,
+        });
         login(response.data.accessToken);
-        navigate('/',{ replace: true });
+        navigate("/", { replace: true });
       } else {
-        await axios.post(`${API_URL}/register`, { username, email, password });
-        
-        alert('Registration successful. You can now log in.');
+        await axios.post(`${API_URL}/register`, {
+          username: values.username,
+          email: values.email,
+          password: values.password,
+        });
+        alert("Registration successful. Please log in.");
         setIsLogin(true);
+        resetForm();
       }
     } catch (err) {
-      
-      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+      setErrors({
+        apiError:
+          err.response?.data?.message || "Something went wrong. Try again.",
+      });
     }
+    setSubmitting(false);
   };
 
   return (
-    <div className="p-8 max-w-md mx-auto mt-10 border border-gray-700 rounded-lg shadow-lg bg-black text-white">
-      <h2 className="text-3xl font-bold mb-6 text-center">
-        {isLogin ? 'Login' : 'Register'}
-      </h2>
-      <form onSubmit={handleSubmit}>
-        {error && (
-          <div className="mb-4 p-3 bg-red-800 text-red-200 rounded-md text-sm">
-            {error}
-          </div>
-        )}
-        {!isLogin && (
-          <div className="mb-4">
-            <label className="block text-gray-300 mb-1">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="w-full px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-        )}
-        <div className="mb-4">
-          <label className="block text-gray-300 mb-1">Email address</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-yellow-400"
-          />
-        </div>
-        <div className="mb-6">
-          <label className="block text-gray-300 mb-1">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-yellow-400"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full py-2 font-bold text-black bg-yellow-400 rounded-md hover:bg-yellow-500 transition-colors duration-300"
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
+      <Paper
+        elevation={6}
+        sx={{
+          p: 4,
+          width: 400,
+          bgcolor: "#1e1e2f",
+          color: "white",
+          borderRadius: 3,
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          {isLogin ? "Login" : "Register"}
+        </Typography>
+
+        <Formik
+          initialValues={{ username: "", email: "", password: "" }}
+          validationSchema={getValidationSchema()}
+          onSubmit={handleSubmit}
+          enableReinitialize
         >
-          {isLogin ? 'Login' : 'Register'}
-        </button>
-      </form>
-      <div className="mt-4 text-center text-gray-400">
-        {isLogin ? "Don't have an account? " : 'Already have an account? '}
-        <button
-          onClick={() => setIsLogin(!isLogin)}
-          className="text-yellow-400 hover:underline transition-colors duration-300"
-        >
-          {isLogin ? 'Register here' : 'Login here'}
-        </button>
-      </div>
-    </div>
+          {({
+            values,
+            handleChange,
+            touched,
+            errors,
+            handleBlur,
+            isSubmitting,
+          }) => (
+            <Form>
+              {errors.apiError && (
+                <Typography
+                  color="error"
+                  sx={{ mb: 2, fontSize: "0.9rem", textAlign: "center" }}
+                >
+                  {errors.apiError}
+                </Typography>
+              )}
+
+              {!isLogin && (
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  label="Username"
+                  name="username"
+                  value={values.username}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
+                  InputLabelProps={{ style: { color: "#bbb" } }}
+                  InputProps={{
+                    style: { color: "white" },
+                  }}
+                />
+              )}
+
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Email Address"
+                name="email"
+                type="email"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.email && Boolean(errors.email)}
+                helperText={touched.email && errors.email}
+                InputLabelProps={{ style: { color: "#bbb" } }}
+                InputProps={{
+                  style: { color: "white" },
+                }}
+              />
+
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={touched.password && Boolean(errors.password)}
+                helperText={touched.password && errors.password}
+                InputLabelProps={{ style: { color: "#bbb" } }}
+                InputProps={{
+                  style: { color: "white" },
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        sx={{ color: "white" }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                color="warning"
+                fullWidth
+                sx={{ mt: 3, fontWeight: "bold" }}
+                disabled={isSubmitting}
+              >
+                {isLogin ? "Login" : "Register"}
+              </Button>
+            </Form>
+          )}
+        </Formik>
+
+        <Typography align="center" sx={{ mt: 3 }}>
+          {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <Button onClick={() => setIsLogin(!isLogin)} sx={{ color: "orange" }}>
+            {isLogin ? "Register here" : "Login here"}
+          </Button>
+        </Typography>
+      </Paper>
+    </Box>
   );
 };
 

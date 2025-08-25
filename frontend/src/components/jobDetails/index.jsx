@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const API_URL = 'https://jobby-zzfw.onrender.com/api/jobs';
+const API_URL = "https://jobby-zzfw.onrender.com/api/jobs";
 
 const JobDetails = () => {
   const { id } = useParams();
@@ -12,20 +12,20 @@ const JobDetails = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchJobDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const fetchJobDetails = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/${id}`);
+        setJob(response.data);
+      } catch (err) {
+        console.error("Error fetching job details:", err);
+        setError("Failed to fetch job details.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchJobDetails = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/${id}`);
-      setJob(response.data);
-      setLoading(false);
-    } catch {
-      setError('Failed to fetch job details.');
-      setLoading(false);
-    }
-  };
+    fetchJobDetails();
+  }, [id]);
 
   if (loading) {
     return (
@@ -37,9 +37,9 @@ const JobDetails = () => {
 
   if (error || !job) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-900 text-red-500">
+      <div className="flex justify-center items-center h-screen bg-gray-900">
         <div className="p-4 rounded-md bg-red-100 border border-red-400 text-black">
-          {error || 'Job not found.'}
+          {error || "Job not found."}
         </div>
       </div>
     );
@@ -49,14 +49,13 @@ const JobDetails = () => {
     <div
       className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{
-        backgroundImage:
-          "url('')",
+        backgroundImage: "url('')",
       }}
     >
       <div className="p-6 max-w-3xl mx-auto border border-gray-700 rounded-lg shadow-lg bg-gray-900/90 text-white backdrop-blur-md">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/jobs')}
+          onClick={() => navigate("/jobs")}
           className="mb-6 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-sm font-semibold rounded-lg transition-colors duration-300"
         >
           ← Back to Jobs

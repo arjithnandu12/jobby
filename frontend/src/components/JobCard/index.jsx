@@ -1,59 +1,134 @@
 import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { AuthContext } from "../../Context/AuthContext";  
+import { AuthContext } from "../../Context/AuthContext";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  Button,
+  Box,
+} from "@mui/material";
+import { motion } from "framer-motion";
+
+const MotionCard = motion(Card);
 
 const JobCard = ({ job, onDelete }) => {
   const { user } = useContext(AuthContext);
 
   return (
-    <div className="p-6 border border-gray-700 rounded-lg shadow-md bg-black text-white">
-      <h3 className="text-lg font-semibold mb-2">{job.title}</h3>
-      <p className="font-bold text-gray-300">{job.company}</p>
-      <p className="text-sm text-gray-500">{job.location}</p>
+    <MotionCard
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.98 }}
+      elevation={4}
+      sx={{
+        borderRadius: "20px",
+        overflow: "hidden",
+        background: "linear-gradient(135deg, #fdfbfb, #ebedee)", // Light gradient
+        color: "#1a1a1a",
+      }}
+    >
+      <CardContent>
+        {/* ✅ Title */}
+        <Typography variant="h6" fontWeight="bold" sx={{ color: "#2c3e50" }}>
+          {job.title}
+        </Typography>
 
-      <div className="flex items-center mt-2 space-x-2">
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">
-          ${job.salary}
-        </span>
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-500 text-white">
-          {job.jobType}
-        </span>
-      </div>
+        {/* ✅ Company */}
+        <Typography variant="subtitle1" sx={{ color: "#34495e" }}>
+          {job.company}
+        </Typography>
 
-      {/* ✅ Added Description */}
-      <p className="mt-4 text-gray-300 line-clamp-2">
-        {job.description}
-      </p>
+        {/* ✅ Location */}
+        <Typography variant="body2" sx={{ color: "#7f8c8d" }}>
+          {job.location}
+        </Typography>
 
-      <p className="mt-2 text-gray-400 text-sm">
-        Posted on: {new Date(job.postedAt).toLocaleDateString()}
-      </p>
+        {/* ✅ Salary & Job Type */}
+        <Box mt={2} display="flex" gap={1}>
+          {job.salary && (
+            <Chip
+              label={`$${job.salary}`}
+              sx={{
+                bgcolor: "#2ecc71",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            />
+          )}
+          <Chip
+            label={job.jobType}
+            sx={{
+              bgcolor: "#9b59b6",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          />
+        </Box>
 
-      <div className="flex space-x-4 mt-6">
-        <RouterLink
-          to={`/jobs/${job._id}`}
-          className="px-4 py-2 text-sm font-medium text-black bg-blue-500 rounded-md hover:bg-blue-600 transition-colors duration-300"
+        {/* ✅ Description */}
+        <Typography
+          variant="body2"
+          sx={{ mt: 2, color: "#2c3e50", opacity: 0.85 }}
         >
-          View Details
-        </RouterLink>
-        {user && (
-          <>
-            <RouterLink
-              to={`/jobs/edit/${job._id}`}
-              className="px-4 py-2 text-sm font-medium text-black bg-yellow-400 rounded-md hover:bg-yellow-500 transition-colors duration-300"
-            >
-              Edit
-            </RouterLink>
-            <button
-              onClick={() => onDelete(job._id)}
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors duration-300"
-            >
-              Delete
-            </button>
-          </>
-        )}
-      </div>
-    </div>
+          {job.description}
+        </Typography>
+
+        {/* ✅ Posted Date */}
+        <Typography
+          variant="caption"
+          sx={{ mt: 1, display: "block", color: "#7f8c8d" }}
+        >
+          Posted on: {new Date(job.postedAt).toLocaleDateString()}
+        </Typography>
+
+        {/* ✅ Action Buttons */}
+        <Box mt={3} display="flex" gap={2}>
+          <Button
+            component={RouterLink}
+            to={`/jobs/${job._id}`}
+            variant="contained"
+            sx={{
+              bgcolor: "#3498db",
+              "&:hover": { bgcolor: "#2980b9" },
+              borderRadius: "12px",
+            }}
+          >
+            View Details
+          </Button>
+
+          {user && (
+            <>
+              <Button
+                component={RouterLink}
+                to={`/jobs/edit/${job._id}`}
+                variant="contained"
+                sx={{
+                  bgcolor: "#f1c40f",
+                  color: "black",
+                  "&:hover": { bgcolor: "#d4ac0d" },
+                  borderRadius: "12px",
+                }}
+              >
+                Edit
+              </Button>
+
+              <Button
+                onClick={() => onDelete(job._id)}
+                variant="contained"
+                sx={{
+                  bgcolor: "#e74c3c",
+                  "&:hover": { bgcolor: "#c0392b" },
+                  borderRadius: "12px",
+                }}
+              >
+                Delete
+              </Button>
+            </>
+          )}
+        </Box>
+      </CardContent>
+    </MotionCard>
   );
 };
 

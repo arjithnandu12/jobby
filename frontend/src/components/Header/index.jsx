@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../Context/AuthContext.jsx';
+import React, { useContext } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../Context/AuthContext.jsx";
 
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
@@ -15,47 +15,40 @@ const Header = () => {
     <nav
       className="flex items-center justify-between px-6 py-4 shadow-md"
       style={{
-        backgroundColor: "#FFFDF2", // cream background
-        borderBottom: "2px solid #000000", // black border
+        backgroundColor: "#FFFDF2",
+        borderBottom: "2px solid #000000",
       }}
     >
-      
+      {/* Logo */}
       <div className="flex-shrink-0">
-        <h1 className="text-2xl font-bold tracking-wide">
-          <RouterLink
-            to="/"
-            className="transition-colors duration-300"
-            style={{
-              color: "#000000", // black
-            }}
-          >
-            <img 
-             src="https://www.svgrepo.com/show/103299/job-search.svg" 
-              alt="Job Board Logo"
-              style={{ height: "50px", width: "50px" }}
-            />
-          </RouterLink>
-        </h1>
+        <RouterLink to="/">
+          <img
+            src="https://www.svgrepo.com/show/103299/job-search.svg"
+            alt="Job Board Logo"
+            style={{ height: "50px", width: "50px" }}
+          />
+        </RouterLink>
       </div>
 
-    
+      {/* Nav Items */}
       <div className="flex items-center space-x-6">
-        <RouterLink
-          to="/jobs"
-          className="font-medium transition-colors duration-300 hover:underline"
-          style={{ color: "#000000" }}
-        >
-          All Jobs
-        </RouterLink>
-        <RouterLink
-          to="/jobs/new"
-          className="font-medium transition-colors duration-300 hover:underline"
-          style={{ color: "#000000" }}
-        >
-          Post Job
+        <RouterLink to="/jobs">
+          <img
+            src="https://www.svgrepo.com/show/138396/job-post.svg"
+            alt="Jobs"
+            style={{ height: "50px", width: "50px" }}
+          />
         </RouterLink>
 
-       
+        <RouterLink to="/jobs/new">
+          <img
+            src="https://www.svgrepo.com/show/374703/job-profile.svg"
+            alt="Post Job"
+            style={{ height: "50px", width: "50px" }}
+          />
+        </RouterLink>
+
+        {/* Auth Buttons */}
         {user ? (
           <button
             onClick={handleLogout}

@@ -1,113 +1,125 @@
 const asyncHandler = require("express-async-handler");
-
 const Job = require("../models/jobModel");
 
-// @desc    Get all jobs with pagination and search
-// @route   GET /api/jobs
-// @access  Public
+// @desc    Get all jobs with pagination and search
+// @route   GET /api/jobs
+// @access  Public
 const getJobs = asyncHandler(async (req, res) => {
-    const { page=1, limit=9, search="" } = req.query;
+  const { page = 1, limit = 9, search = "" } = req.query;
 
-    const pageNumber = parseInt(page);
-    const limitNumber = parseInt(limit);
+  const pageNumber = parseInt(page, 10) || 1;
+  const limitNumber = parseInt(limit, 10) || 9;
 
-    const skip = (pageNumber - 1) * limitNumber;
+  const query = {
+    $or: [
+      { title: { $regex: search, $options: "i" } },
+      { company: { $regex: search, $options: "i" } },
+      { location: { $regex: search, $options: "i" } },
+    ],
+  };
 
-    // Build the search query to search across title and description
-    const searchQuery = search
-        ? {
-            $or: [
-                { title: { $regex: search, $options: 'i' } },
-                { company: { $regex: search, $options: "i" } },
-                { location: { $regex: search, $options: "i" } },
-                
-            ]
-        }
-        : {};
+  const count = await Job.countDocuments(query);
+  const jobs = await Job.find(query)
+    .limit(limitNumber)
+    .skip((pageNumber - 1) * limitNumber)
+    .sort({ postedAt: -1 });
 
-    const jobs = await Job.find(searchQuery)
-        .skip(skip)
-        .limit(limitNumber)
-
-    const totalJobs = await Job.countDocuments(searchQuery);
-
-    res.status(200).json({
-        success: true,
-        count: jobs.length,
-        total: totalJobs,
-        page: pageNumber,
-        pages: Math.ceil(totalJobs / limitNumber),
-        data: jobs,
-    });
+  res.status(200).json({
+    data: jobs,
+    total: count,
+    pages: Math.ceil(count / limitNumber),
+    currentPage: pageNumber,
+  });
 });
 
+// @desc    Create new job
+// @route   POST /api/jobs
+// @access  Private
 const newJob = asyncHandler(async (req, res) => {
-    try {
-        if (Array.isArray(req.body)) {
-            
-            const jobs = await Job.insertMany(req.body);
-            return res.status(201).json({
-                success: true,
-                count: jobs.length,
-                data: jobs
-            });
-        } else {
-            
-            const { title, company, location, description, salary, jobType } = req.body;
-            
-            if (!title || !company || !location || !description || !salary || !jobType) {
-                res.status(400);
-                throw new Error("Please fill all the fields");
-            }
-            
-            const job = await Job.create({ title, company, location, description, salary, jobType });
-            return res.status(201).json({
-                success: true,
-                data: job
-            });
-        }
-    } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
-    }
+  const { title, company, location, description, salary, jobType } = req.body;
+
+  if (!title || !company || !location || !description || !jobType) {
+    res.status(400);
+    throw new Error("Please provide all required fields");
+  }
+
+  const job = await Job.create({
+    title,
+    company,
+    location,
+    description,
+    salary,
+    jobType,
+    user: req.user._id, // requires authentication middleware
+  });
+
+  res.status(201).json(job);
 });
 
+// @desc    Get single job
+// @route   GET /api/jobs/:id
+// @access  Public
 const getJobById = asyncHandler(async (req, res) => {
-    const job = await Job.findById(req.params.id);
-    if (!job) {
-        res.status(404);
-        throw new Error("Job not found");
-    }
-    res.status(200).json(job);
+  const job = await Job.findById(req.params.id);
+
+  if (!job) {
+    res.status(404);
+    throw new Error("Job not found");
+  }
+
+  res.status(200).json(job);
 });
 
+// @desc    Update job
+// @route   PUT /api/jobs/:id
+// @access  Private
 const updateJobById = asyncHandler(async (req, res) => {
-    const job = await Job.findById(req.params.id);
-    if (!job) {
-        res.status(404);
-        throw new Error("Job not found");
-    }
+  const job = await Job.findById(req.params.id);
 
-    // Added 'description' to the destructuring
-    const { title, company, location, description, salary, jobType } = req.body;
+  if (!job) {
+    res.status(404);
+    throw new Error("Job not found");
+  }
 
-    // Added 'description' to the update object
-    const updatedJob = await Job.findByIdAndUpdate(
-        req.params.id,
-        { title, company, location, description, salary, jobType },
-        { new: true, runValidators: true }
-    );
+  // Only allow the user who created the job to update it
+  if (job.user.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error("Not authorized to update this job");
+  }
 
-    res.status(200).json(updatedJob);
+  const updatedJob = await Job.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json(updatedJob);
 });
 
+// @desc    Delete job
+// @route   DELETE /api/jobs/:id
+// @access  Private
 const deleteJobById = asyncHandler(async (req, res) => {
-    const job = await Job.findById(req.params.id);
-    if (!job) {
-        res.status(404);
-        throw new Error("Job not found");
-    }
-    await Job.findByIdAndDelete(req.params.id);
-    res.status(200).json(job);
+  const job = await Job.findById(req.params.id);
+
+  if (!job) {
+    res.status(404);
+    throw new Error("Job not found");
+  }
+
+  // Only allow the user who created the job to delete it
+  if (job.user.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error("Not authorized to delete this job");
+  }
+
+  await job.deleteOne();
+  res.status(200).json({ message: "Job deleted successfully" });
 });
 
-module.exports = { getJobs, newJob, getJobById, updateJobById, deleteJobById };
+module.exports = {
+  getJobs,
+  newJob,
+  getJobById,
+  updateJobById,
+  deleteJobById,
+};

@@ -1,6 +1,6 @@
-import { createContext, useState, useEffect } from 'react';
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import { createContext, useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import {jwtDecode} from "jwt-decode"; 
 
 const AuthContext = createContext();
 export { AuthContext };
@@ -10,28 +10,33 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = Cookies.get('accessToken'); // get token from cookies
+    const token = Cookies.get("accessToken");
     if (token) {
       try {
-        
-        setUser({});
+        const decoded = jwtDecode(token);
+        setUser({ token, ...decoded.user });
       } catch (e) {
-        console.error('Failed to decode token:', e);
-        Cookies.remove('accessToken');
+        console.error("Failed to decode token:", e);
+        Cookies.remove("accessToken");
+        setUser(null);
       }
     }
     setLoading(false);
   }, []);
 
   const login = (token) => {
-    // store token in cookie, expires in 1 day
-    Cookies.set('accessToken', token, { expires: 1, secure: true });
-    const decoded = jwtDecode(token);
-    setUser({ token, ...decoded.user });
+    Cookies.set("accessToken", token, { expires: 1, secure: true });
+    try {
+      const decoded = jwtDecode(token);
+      setUser({ token, ...decoded.user });
+    } catch (e) {
+      console.error("Failed to decode token during login:", e);
+      setUser(null);
+    }
   };
 
   const logout = () => {
-    Cookies.remove('accessToken');
+    Cookies.remove("accessToken");
     setUser(null);
   };
 

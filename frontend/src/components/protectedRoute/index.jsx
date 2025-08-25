@@ -7,7 +7,10 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen" style={{ backgroundColor: "#FFFDF2" }}>
+      <div
+        className="flex justify-center items-center h-screen"
+        style={{ backgroundColor: "#FFFDF2" }}
+      >
         <div
           className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2"
           style={{ borderColor: "#000000" }}
@@ -17,10 +20,10 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace={true} />;
+    return <Navigate to="/auth" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

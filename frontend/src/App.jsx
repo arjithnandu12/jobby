@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import JobsList from "./components/JobsList";
 import JobForm from "./components/JobForm";
-import JobDetails from "./components/jobDetails";
+import JobDetails from "./components/jobDetails"; // ✅ fixed casing
 import Auth from "./components/LoginForm";
 import Header from "./components/Header";
-import ProtectedRoute from "./components/protectedRoute";
+import ProtectedRoute from "./components/protectedRoute"; // ✅ fixed casing
 
 import { AuthProvider } from "./Context/AuthContext";
 
