@@ -67,47 +67,8 @@ const Home = () => {
               Explore All Jobs
             </Button>
 
-            <Button
-              component={Link}
-              to="/login"
-              variant="outlined"
-              size="large"
-              sx={{
-                px: 5,
-                py: 1.5,
-                borderRadius: "50px",
-                fontWeight: "bold",
-                borderColor: "black",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "black",
-                  color: "white",
-                },
-              }}
-            >
-              Login
-            </Button>
 
-            <Button
-              component={Link}
-              to="/register"
-              variant="outlined"
-              size="large"
-              sx={{
-                px: 5,
-                py: 1.5,
-                borderRadius: "50px",
-                fontWeight: "bold",
-                borderColor: "green",
-                color: "green",
-                "&:hover": {
-                  backgroundColor: "green",
-                  color: "white",
-                },
-              }}
-            >
-              Register
-            </Button>
+            
 
             <Button
               component={Link}

@@ -1,20 +1,16 @@
 import React, { useContext } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { AuthContext } from "../../Context/AuthContext";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-  Button,
-  Box,
-} from "@mui/material";
+import { Card, CardContent, Typography, Chip, Button, Box } from "@mui/material";
 import { motion } from "framer-motion";
 
 const MotionCard = motion(Card);
 
 const JobCard = ({ job, onDelete }) => {
   const { user } = useContext(AuthContext);
+
+  // Check if the current user is the owner of the job post
+  const isOwner = user && user._id === job.user;
 
   return (
     <MotionCard
@@ -29,22 +25,22 @@ const JobCard = ({ job, onDelete }) => {
       }}
     >
       <CardContent>
-        {/* ✅ Title */}
+        {/* Title */}
         <Typography variant="h6" fontWeight="bold" sx={{ color: "#2c3e50" }}>
           {job.title}
         </Typography>
 
-        {/* ✅ Company */}
+        {/* Company */}
         <Typography variant="subtitle1" sx={{ color: "#34495e" }}>
           {job.company}
         </Typography>
 
-        {/* ✅ Location */}
+        {/* Location */}
         <Typography variant="body2" sx={{ color: "#7f8c8d" }}>
           {job.location}
         </Typography>
 
-        {/* ✅ Salary & Job Type */}
+        {/* Salary & Job Type */}
         <Box mt={2} display="flex" gap={1}>
           {job.salary && (
             <Chip
@@ -66,23 +62,17 @@ const JobCard = ({ job, onDelete }) => {
           />
         </Box>
 
-        {/* ✅ Description */}
-        <Typography
-          variant="body2"
-          sx={{ mt: 2, color: "#2c3e50", opacity: 0.85 }}
-        >
+        {/* Description */}
+        <Typography variant="body2" sx={{ mt: 2, color: "#2c3e50", opacity: 0.85 }}>
           {job.description}
         </Typography>
 
-        {/* ✅ Posted Date */}
-        <Typography
-          variant="caption"
-          sx={{ mt: 1, display: "block", color: "#7f8c8d" }}
-        >
+        {/* Posted Date */}
+        <Typography variant="caption" sx={{ mt: 1, display: "block", color: "#7f8c8d" }}>
           Posted on: {new Date(job.postedAt).toLocaleDateString()}
         </Typography>
 
-        {/* ✅ Action Buttons */}
+        {/* Action Buttons */}
         <Box mt={3} display="flex" gap={2}>
           <Button
             component={RouterLink}
@@ -97,7 +87,7 @@ const JobCard = ({ job, onDelete }) => {
             View Details
           </Button>
 
-          {user && (
+          {isOwner && (
             <>
               <Button
                 component={RouterLink}
