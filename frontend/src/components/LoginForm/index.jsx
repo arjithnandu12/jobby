@@ -7,6 +7,8 @@ import {
   Paper,
   IconButton,
   InputAdornment,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { AuthContext } from "../../Context/AuthContext";
@@ -20,6 +22,8 @@ const API_URL = "https://jobby-zzfw.onrender.com/api/user";
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -58,7 +62,8 @@ const LoginForm = () => {
           email: values.email,
           password: values.password,
         });
-        alert("Registration successful. Please log in.");
+        setSnackbarMessage("Registration successful. Please log in.");
+        setOpenSnackbar(true);
         setIsLogin(true);
         resetForm();
       }
@@ -71,6 +76,13 @@ const LoginForm = () => {
     setSubmitting(false);
   };
 
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 8 }}>
       <Paper
@@ -78,7 +90,7 @@ const LoginForm = () => {
         sx={{
           p: 4,
           width: 400,
-          bgcolor: "#1e1e2f",
+          bgcolor: "#0f172a", // Dark blue background
           color: "white",
           borderRadius: 3,
         }}
@@ -177,9 +189,14 @@ const LoginForm = () => {
               <Button
                 type="submit"
                 variant="contained"
-                color="warning"
-                fullWidth
-                sx={{ mt: 3, fontWeight: "bold" }}
+                sx={{
+                  mt: 3,
+                  fontWeight: "bold",
+                  bgcolor: "#2dd4bf", // Teal button color
+                  "&:hover": {
+                    bgcolor: "#14b8a6", // Darker teal on hover
+                  },
+                }}
                 disabled={isSubmitting}
               >
                 {isLogin ? "Login" : "Register"}
@@ -190,11 +207,28 @@ const LoginForm = () => {
 
         <Typography align="center" sx={{ mt: 3 }}>
           {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <Button onClick={() => setIsLogin(!isLogin)} sx={{ color: "orange" }}>
+          <Button
+            onClick={() => setIsLogin(!isLogin)}
+            sx={{ color: "#2dd4bf" }} // Teal link color
+          >
             {isLogin ? "Register here" : "Login here"}
           </Button>
         </Typography>
       </Paper>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

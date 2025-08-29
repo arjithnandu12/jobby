@@ -17,31 +17,31 @@ const JobsList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const { user } = useContext(AuthContext);
 
-  // ✅ Debounce search input
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 500);
+    }, 1000);
     return () => clearTimeout(handler);
   }, [search]);
 
-  // ✅ Fetch jobs whenever page or search changes
+  
   useEffect(() => {
     fetchJobs();
-    // Reset page if search changes
+    
     if (currentPage !== 1 && debouncedSearch) {
       setCurrentPage(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, debouncedSearch]);
 
-  // ✅ Fetch jobs from API
+ 
   const fetchJobs = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(
-        `${API_URL}?page=${currentPage}&limit=9&search=${debouncedSearch}`
+        `${API_URL}?page=${currentPage}&limit=10&search=${debouncedSearch}`
       );
       setJobs(response.data.data || []);
       setTotalPages(response.data.pages || 1);
@@ -52,7 +52,7 @@ const JobsList = () => {
     }
   };
 
-  // ✅ Delete job (only if user has token)
+ 
   const handleDelete = async (jobId) => {
     try {
       const token = user?.token || localStorage.getItem("token");
@@ -71,12 +71,12 @@ const JobsList = () => {
     }
   };
 
-  // ✅ Search handler
+  
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
 
-  // ✅ Loading state
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center mt-10">
@@ -88,7 +88,6 @@ const JobsList = () => {
     );
   }
 
-  // ✅ Error state
   if (error) {
     return (
       <div
@@ -105,7 +104,7 @@ const JobsList = () => {
       className="p-8 min-h-screen"
       style={{ backgroundColor: "#FFFDF2", color: "#000000" }}
     >
-      {/* Header */}
+     
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold">All Jobs</h2>
         <RouterLink
@@ -118,7 +117,6 @@ const JobsList = () => {
         </RouterLink>
       </div>
 
-      {/* Search */}
       <div className="relative mb-6">
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
           <FaSearch className="text-black" />
@@ -137,7 +135,6 @@ const JobsList = () => {
         />
       </div>
 
-      {/* Job List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {jobs.length > 0 ? (
           jobs.map((job) => (
@@ -153,7 +150,7 @@ const JobsList = () => {
         )}
       </div>
 
-      {/* Pagination */}
+     
       <div className="flex justify-center mt-8 space-x-4">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

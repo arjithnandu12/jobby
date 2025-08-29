@@ -72,7 +72,7 @@ const Home = () => {
 
             <Button
               component={Link}
-              to="/post-job"
+              to="/jobs/new"
               variant="contained"
               size="large"
               sx={{

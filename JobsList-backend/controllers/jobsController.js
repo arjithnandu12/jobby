@@ -5,7 +5,7 @@ const Job = require("../models/jobModel");
 // @route   GET /api/jobs
 // @access  Public
 const getJobs = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 9, search = "" } = req.query;
+  const { page = 1, limit = 10, search = "" } = req.query;
 
   const pageNumber = parseInt(page, 10) || 1;
   const limitNumber = parseInt(limit, 10) || 9;
